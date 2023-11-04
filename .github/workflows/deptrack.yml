@@ -1,0 +1,21 @@
+on: [push]
+jobs:
+  deptrack_test:
+    name: Local test with act
+    runs-on: ubuntu-latest
+    steps:
+      # To use an action in the root directory, you have to checkout first
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Upload bom to dependency-track instance
+        uses: ./
+        id: deptrack
+        with:
+          serverUrl: ${{ secrets.DEPENDENCYTRACK_SERVERURL }}
+          apiKey: ${{ secrets.DEPENDENCYTRACK_APIKEY }}
+          bomFile: 'build/reports/bom.xml'
+          projectName: 'myproject'
+          projectVersion: '1.0.0'
+          autoCreate: true
+      - name: StatusCode
+        run: echo "Upload returned ${{ steps.deptrack.outputs.statusCode }}"
